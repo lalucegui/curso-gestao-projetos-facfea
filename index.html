@@ -348,13 +348,13 @@
   .nav-aula-row.is-hidden .label em{color:var(--terracotta);font-style:normal;font-size:10.5px;}
   .nav-block.is-hidden{opacity:0.55;}
   .nav-block.is-hidden .label em{color:var(--terracotta);font-style:normal;font-size:10.5px;}
-  .nav-block-visible-cb{display:none;flex:0 0 auto;width:15px;height:15px;cursor:pointer;accent-color:var(--navy);margin-right:2px;}
-  body.admin-mode .nav-block-visible-cb{display:block;}
+  .nav-block-visible-cb{display:none !important;flex:0 0 auto;width:15px;height:15px;cursor:pointer;accent-color:var(--navy);margin-right:2px;}
+  body.admin-mode .nav-block-visible-cb{display:block !important;}
   .side-nav.collapsed .nav-block-visible-cb{display:none !important;}
-  .nav-aula-visible-cb{display:none;flex:0 0 auto;width:15px;height:15px;cursor:pointer;accent-color:var(--navy);}
-  body.admin-mode .nav-aula-visible-cb{display:block;}
+  .nav-aula-visible-cb{display:none !important;flex:0 0 auto;width:15px;height:15px;cursor:pointer;accent-color:var(--navy);}
+  body.admin-mode .nav-aula-visible-cb{display:block !important;}
   .nav-aula-edit-btn{
-    display:none;
+    display:none !important;
     flex:0 0 auto;
     width:22px;height:22px;
     font-size:10px;
@@ -365,7 +365,7 @@
   .side-nav.collapsed .nav-aula-visible-cb,
   .side-nav.collapsed .nav-aula-edit-btn{display:none !important;}
   .add-block-btn{
-    display:none;
+    display:none !important;
     width:calc(100% - 16px);
     margin:10px 8px 0 8px;
     background:var(--navy);
@@ -378,10 +378,10 @@
     cursor:pointer;
   }
   .add-block-btn:hover{background:var(--navy-dark);}
-  body.admin-mode .add-block-btn{display:block;}
+  body.admin-mode .add-block-btn{display:block !important;}
   .side-nav.collapsed .add-block-btn{display:none !important;}
   .add-aula-btn{
-    display:none;
+    display:none !important;
     width:calc(100% - 4px);
     margin-top:4px;
     background:none;
@@ -393,7 +393,7 @@
     cursor:pointer;
   }
   .add-aula-btn:hover{background:var(--ice-tint);color:var(--navy);border-color:var(--navy);}
-  body.admin-mode .add-aula-btn{display:block;}
+  body.admin-mode .add-aula-btn{display:block !important;}
   .side-nav.collapsed .add-aula-btn{display:none !important;}
 
   .nav-aulas{padding-left:20px;}
