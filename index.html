@@ -346,6 +346,11 @@
   .nav-aula-row .nav-aula{flex:1 1 auto;min-width:0;}
   .nav-aula-row.is-hidden{opacity:0.55;}
   .nav-aula-row.is-hidden .label em{color:var(--terracotta);font-style:normal;font-size:10.5px;}
+  .nav-block.is-hidden{opacity:0.55;}
+  .nav-block.is-hidden .label em{color:var(--terracotta);font-style:normal;font-size:10.5px;}
+  .nav-block-visible-cb{display:none;flex:0 0 auto;width:15px;height:15px;cursor:pointer;accent-color:var(--navy);margin-right:2px;}
+  body.admin-mode .nav-block-visible-cb{display:block;}
+  .side-nav.collapsed .nav-block-visible-cb{display:none !important;}
   .nav-aula-visible-cb{display:none;flex:0 0 auto;width:15px;height:15px;cursor:pointer;accent-color:var(--navy);}
   body.admin-mode .nav-aula-visible-cb{display:block;}
   .nav-aula-edit-btn{
@@ -578,6 +583,27 @@
     border-radius:6px 6px 0 0;
     margin:-16px -16px 14px -16px;
   }
+  .org-screen{max-width:100%;}
+  .org-blocks-list{margin-top:16px;display:flex;flex-direction:column;gap:16px;}
+  .org-block-card{border:1px solid var(--line);border-radius:10px;padding:14px;background:var(--ice-tint);}
+  .org-block-header-row{display:flex;align-items:center;gap:8px;flex-wrap:wrap;}
+  .org-block-header-row .org-block-num{width:56px;flex:0 0 auto;font-weight:700;text-align:center;}
+  .org-block-header-row .org-block-title{flex:1 1 220px;font-weight:700;}
+  .org-hidden-label{display:flex;align-items:center;gap:5px;font-size:12px;color:var(--muted);white-space:nowrap;flex:0 0 auto;}
+  .org-hidden-label input{width:auto;}
+  .org-aula-rows{margin-top:10px;padding-left:20px;display:flex;flex-direction:column;gap:6px;}
+  .org-aula-row{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:#fff;border-radius:8px;padding:6px 8px;border:1px solid var(--line);}
+  .org-aula-row .org-aula-num{width:48px;flex:0 0 auto;text-align:center;}
+  .org-aula-row .org-aula-block{flex:0 0 auto;max-width:170px;font-size:12px;}
+  .org-aula-row .org-aula-title{flex:1 1 180px;}
+  .org-screen input[type=text], .org-screen select{
+    padding:6px 8px;border:1px solid var(--line);border-radius:6px;font-size:13px;
+  }
+  @media(max-width:820px){
+    .org-block-header-row, .org-aula-row{flex-direction:column;align-items:stretch;}
+    .org-block-header-row .org-block-num, .org-aula-row .org-aula-num{width:100%;}
+    .org-aula-row .org-aula-block{max-width:100%;}
+  }
   .editor-form .editor-actions{display:flex;gap:8px;margin-top:16px;}
   .editor-form .table-grid{width:100%;border-collapse:collapse;margin-top:6px;}
   .editor-form .table-grid td{padding:3px;}
@@ -612,9 +638,28 @@
   .rich-content ul{list-style:disc;}
   .rich-content ol{list-style:decimal;}
   .rich-content ul li, .rich-content ol li{margin-bottom:4px;line-height:1.6;}
-  .rich-toolbar input[type=color][data-rt="highlight"]{
-    width:26px;height:26px;padding:0;border:1px solid var(--line);border-radius:5px;cursor:pointer;
+  .highlight-menu-wrap{position:relative;}
+  .highlight-menu-btn{
+    background:var(--ice-tint);border:1px solid transparent;border-radius:5px;
+    width:36px;height:28px;cursor:pointer;font-size:12px;color:var(--charcoal);
   }
+  .highlight-menu-btn:hover{background:var(--ice);}
+  .highlight-menu-panel{
+    position:absolute;top:32px;left:0;z-index:50;
+    background:#fff;border:1px solid var(--line);border-radius:8px;
+    box-shadow:0 6px 20px rgba(0,0,0,0.15);
+    padding:10px;min-width:170px;
+  }
+  .highlight-menu-panel.hidden{display:none;}
+  .highlight-swatches{display:flex;align-items:center;gap:6px;margin-bottom:8px;}
+  .hl-swatch{width:22px;height:22px;border-radius:5px;border:1px solid var(--line);cursor:pointer;padding:0;}
+  .hl-swatch:hover{transform:scale(1.1);}
+  .hl-custom{width:22px;height:22px;padding:0;border:1px solid var(--line);border-radius:5px;cursor:pointer;}
+  .hl-remove{
+    width:100%;background:var(--ice-tint);border:none;border-radius:5px;
+    padding:6px 8px;font-size:12px;color:var(--charcoal);cursor:pointer;text-align:left;
+  }
+  .hl-remove:hover{background:var(--ice);}
   .editor-form .img-preview{max-width:200px;border-radius:6px;margin-top:8px;display:block;}
 
   /* ===== Main content ===== */
@@ -1030,6 +1075,7 @@
     <button class="btn-tiny" id="download-backup-btn" title="Baixa um arquivo com todo o conteúdo atual">⬇ Baixar backup</button>
     <button class="btn-tiny" id="restore-backup-btn" title="Restaura um arquivo de backup salvo antes">⬆ Restaurar backup</button>
     <input type="file" id="restore-backup-input" accept=".json" style="display:none;">
+    <button class="btn-tiny" id="organize-btn" title="Reorganizar numeração, blocos e visibilidade de tudo em uma tela só">🗂 Organizar curso</button>
     <button class="btn-tiny" id="reload-data-btn" title="Tenta buscar de novo a última versão salva">Recarregar dados</button>
     <button class="btn-tiny" id="change-pw-btn">Trocar senha</button>
     <button class="btn-tiny" id="exit-edit-btn">Sair do modo de edição</button>
@@ -1214,6 +1260,7 @@ async function loadStorageImages(){
 function flatAulaList(includeHidden){
   const list = [];
   for(const b of COURSE){
+    if(!includeHidden && b.hidden) continue;
     for(const a of b.aulas){
       if(includeHidden || !a.hidden) list.push({blockNum:b.num, aulaNum:a.num});
     }
@@ -1273,11 +1320,12 @@ function toRoman(num){
 
 function renderSideNav(){
   const el = document.getElementById('nav-list');
-  el.innerHTML = COURSE.map(b => `
-    <div class="nav-block">
+  el.innerHTML = COURSE.filter(b=>isAdmin || !b.hidden).map(b => `
+    <div class="nav-block ${b.hidden?'is-hidden':''}">
       <div class="nav-block-row">
+        <input type="checkbox" class="nav-block-visible-cb" data-vis-block="${b.num}" ${b.hidden?'':'checked'} title="Bloco visível para os alunos">
         <button class="nav-block-header ${b.num===state.block?'active':''}" data-block="${b.num}">
-          <span class="num">${toRoman(b.num)}</span><span class="label" data-block-label="${b.num}">${esc(b.title)}</span>
+          <span class="num">${toRoman(b.num)}</span><span class="label" data-block-label="${b.num}">${esc(b.title)}${b.hidden?' <em>(oculto)</em>':''}</span>
         </button>
         <button class="edit-chip block-edit-btn" data-block-edit="${b.num}" title="Renomear bloco">✎</button>
       </div>
@@ -1315,9 +1363,21 @@ function renderSideNav(){
       document.getElementById('content').scrollIntoView({behavior:'smooth'});
     });
   });
+  el.querySelectorAll('.nav-block-visible-cb').forEach(cb=>{
+    cb.addEventListener('click', (e)=> e.stopPropagation());
+    cb.addEventListener('change', async ()=>{
+      if(!isAdmin){ render(); return; }
+      const bn = parseInt(cb.dataset.visBlock,10);
+      const blk = COURSE.find(x=>x.num===bn);
+      blk.hidden = !cb.checked;
+      await saveCourseToStorage();
+      render();
+    });
+  });
   el.querySelectorAll('.nav-aula-visible-cb').forEach(cb=>{
     cb.addEventListener('click', (e)=> e.stopPropagation());
     cb.addEventListener('change', async ()=>{
+      if(!isAdmin){ render(); return; }
       const bn = parseInt(cb.dataset.visBlock,10);
       const an = parseInt(cb.dataset.visAula,10);
       const blk = COURSE.find(x=>x.num===bn);
@@ -1330,6 +1390,7 @@ function renderSideNav(){
   el.querySelectorAll('.nav-aula-edit-btn').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
+      if(!isAdmin) return;
       state.block = parseInt(btn.dataset.editBlock,10);
       state.aula = parseInt(btn.dataset.editAula,10);
       editState = {kind:'aulaHeader'};
@@ -1341,6 +1402,7 @@ function renderSideNav(){
   el.querySelectorAll('.block-edit-btn').forEach(btn=>{
     btn.addEventListener('click', (e)=>{
       e.stopPropagation();
+      if(!isAdmin) return;
       const bn = parseInt(btn.dataset.blockEdit,10);
       const b = COURSE.find(x=>x.num===bn);
       const labelSpan = el.querySelector(`[data-block-label="${bn}"]`);
@@ -1350,6 +1412,7 @@ function renderSideNav(){
       input.focus();
       input.select();
       const commit = async ()=>{
+        if(!isAdmin){ render(); return; }
         const val = input.value.trim();
         if(val) b.title = val;
         await saveCourseToStorage();
@@ -1364,6 +1427,7 @@ function renderSideNav(){
   });
   el.querySelectorAll('.add-aula-btn').forEach(btn=>{
     btn.addEventListener('click', ()=>{
+      if(!isAdmin) return;
       const bn = parseInt(btn.dataset.addAulaBlock,10);
       const maxNum = Math.max(0, ...COURSE.flatMap(bb=>bb.aulas.map(aa=>aa.num)));
       editState = {kind:'newAula', blockNum: bn, suggestedNum: maxNum+1};
@@ -1375,6 +1439,7 @@ function renderSideNav(){
   const addBlockBtn = document.getElementById('add-block-btn');
   if(addBlockBtn){
     addBlockBtn.addEventListener('click', ()=>{
+      if(!isAdmin) return;
       const maxBlockNum = Math.max(0, ...COURSE.map(bb=>bb.num));
       editState = {kind:'newBlock', suggestedNum: maxBlockNum+1};
       render();
@@ -1509,7 +1574,7 @@ function sectionHtml(sec, idx){
 
 function renderAulaPicker(){
   const el = document.getElementById('aula-picker');
-  el.innerHTML = COURSE.filter(b=>isAdmin || b.aulas.some(a=>!a.hidden)).map(b => `
+  el.innerHTML = COURSE.filter(b=>isAdmin || (!b.hidden && b.aulas.some(a=>!a.hidden))).map(b => `
     <div class="picker-block-title">Bloco ${toRoman(b.num)} — ${esc(b.title)}</div>
     ${b.aulas.filter(a=>isAdmin || !a.hidden).map(a => `
       <button class="picker-item ${a.isPractice?'practice':''} ${a.hidden?'is-hidden':''} ${(b.num===state.block && a.num===state.aula)?'current':''}" data-block="${b.num}" data-aula="${a.num}" role="menuitem">
@@ -1590,8 +1655,19 @@ function richToolbarHtml(targetId){
     <button type="button" data-rt="insertUnorderedList" title="Lista com marcadores">&#8226; &#8801;</button>
     <button type="button" data-rt="insertOrderedList" title="Lista numerada">1. &#8801;</button>
     <div class="sep"></div>
-    <input type="color" data-rt="highlight" title="Grifar / sombrear texto (clique para escolher a cor)" value="#FFF3A0">
-    <button type="button" data-rt="removehighlight" title="Remover grifado">&#9099;</button>
+    <div class="highlight-menu-wrap">
+      <button type="button" class="highlight-menu-btn" data-rt="highlight-menu-toggle" title="Grifar texto">&#128394;&#65039;&#9660;</button>
+      <div class="highlight-menu-panel hidden" data-highlight-panel>
+        <div class="highlight-swatches">
+          <button type="button" class="hl-swatch" data-hl-color="#FFF3A0" style="background:#FFF3A0;" title="Amarelo"></button>
+          <button type="button" class="hl-swatch" data-hl-color="#C8F0C0" style="background:#C8F0C0;" title="Verde"></button>
+          <button type="button" class="hl-swatch" data-hl-color="#C6E3FF" style="background:#C6E3FF;" title="Azul"></button>
+          <button type="button" class="hl-swatch" data-hl-color="#FFD6E8" style="background:#FFD6E8;" title="Rosa"></button>
+          <input type="color" class="hl-custom" data-hl-custom title="Cor personalizada" value="#FFF3A0">
+        </div>
+        <button type="button" class="hl-remove" data-hl-remove>Remover grifado</button>
+      </div>
+    </div>
     <div class="sep"></div>
     <button type="button" data-rt="paint" id="paintbtn-${targetId}" title="Copiar formatação: selecione um texto formatado, clique aqui, depois selecione outro texto para aplicar a mesma formatação">🖌</button>
   </div>`;
@@ -1656,6 +1732,28 @@ function restoreRichSelection(){
 }
 
 // Wrap the current selection (within a contenteditable field) in a <span style="...">
+function removeHighlightFromSelection(){
+  restoreRichSelection();
+  const sel = window.getSelection();
+  if(!sel || sel.rangeCount===0 || sel.isCollapsed) return;
+  const range = sel.getRangeAt(0);
+  const container = range.commonAncestorContainer.nodeType===1 ? range.commonAncestorContainer : range.commonAncestorContainer.parentElement;
+  const richRoot = container.closest('.rich-text');
+  if(!richRoot) return;
+  // Remove background-color de qualquer span que esteja (mesmo parcialmente) dentro da seleção
+  richRoot.querySelectorAll('span[style*="background-color"]').forEach(span=>{
+    if(sel.containsNode(span, true)){
+      span.style.removeProperty('background-color');
+      if(!span.getAttribute('style')) {
+        // span sem nenhum outro estilo: desembrulha para não deixar lixo no HTML
+        const parent = span.parentNode;
+        while(span.firstChild) parent.insertBefore(span.firstChild, span);
+        parent.removeChild(span);
+      }
+    }
+  });
+}
+
 function wrapSelectionStyle(styleProp, value){
   restoreRichSelection();
   const sel = window.getSelection();
@@ -1678,6 +1776,35 @@ function wrapSelectionStyle(styleProp, value){
 }
 
 document.addEventListener('click', (e)=>{
+  const swatch = e.target.closest('.hl-swatch');
+  if(swatch){
+    const panel = swatch.closest('[data-highlight-panel]');
+    const field = document.getElementById(panel.dataset.forTarget);
+    if(field){ field.focus(); restoreRichSelection(); wrapSelectionStyle('background-color', swatch.dataset.hlColor); }
+    panel.classList.add('hidden');
+    return;
+  }
+  const removeBtn = e.target.closest('.hl-remove');
+  if(removeBtn){
+    const panel = removeBtn.closest('[data-highlight-panel]');
+    const field = document.getElementById(panel.dataset.forTarget);
+    if(field){ field.focus(); removeHighlightFromSelection(); }
+    panel.classList.add('hidden');
+    return;
+  }
+  if(!e.target.closest('.highlight-menu-wrap')){
+    document.querySelectorAll('[data-highlight-panel]').forEach(p=>p.classList.add('hidden'));
+  }
+});
+document.addEventListener('input', (e)=>{
+  if(e.target.classList && e.target.classList.contains('hl-custom')){
+    const panel = e.target.closest('[data-highlight-panel]');
+    const field = document.getElementById(panel.dataset.forTarget);
+    if(field){ field.focus(); restoreRichSelection(); wrapSelectionStyle('background-color', e.target.value); }
+  }
+});
+
+document.addEventListener('click', (e)=>{
   const btn = e.target.closest('[data-rt]');
   if(!btn || btn.tagName !== 'BUTTON') return;
   const toolbar = btn.closest('.rich-toolbar');
@@ -1686,6 +1813,16 @@ document.addEventListener('click', (e)=>{
   if(!field) return;
   field.focus();
   const cmd = btn.dataset.rt;
+  if(cmd==='highlight-menu-toggle'){
+    const panel = toolbar.querySelector('[data-highlight-panel]');
+    const isHidden = panel.classList.contains('hidden');
+    document.querySelectorAll('[data-highlight-panel]').forEach(p=>p.classList.add('hidden'));
+    if(isHidden){
+      panel.dataset.forTarget = targetId;
+      panel.classList.remove('hidden');
+    }
+    return;
+  }
   if(cmd==='bold') document.execCommand('bold');
   else if(cmd==='italic') document.execCommand('italic');
   else if(cmd==='underline') document.execCommand('underline');
@@ -1695,7 +1832,6 @@ document.addEventListener('click', (e)=>{
   else if(cmd==='alignjustify') document.execCommand('justifyFull');
   else if(cmd==='insertUnorderedList') document.execCommand('insertUnorderedList');
   else if(cmd==='insertOrderedList') document.execCommand('insertOrderedList');
-  else if(cmd==='removehighlight') wrapSelectionStyle('background-color', 'transparent');
   else if(cmd==='paint') togglePaintMode(btn);
 });
 
@@ -1834,7 +1970,7 @@ function richFieldToText(el){
 function sanitizeRichHtml(html){
   const tpl = document.createElement('template');
   tpl.innerHTML = html;
-  const allowed = {B:1,I:1,U:1,SPAN:1,DIV:1,BR:1,STRONG:1,EM:1,P:1,FONT:1};
+  const allowed = {B:1,I:1,U:1,SPAN:1,DIV:1,BR:1,STRONG:1,EM:1,P:1,FONT:1,UL:1,OL:1,LI:1};
   const allowedStyle = ['color','font-family','font-size','text-align','font-weight','font-style','text-decoration','display','background-color'];
   (function clean(node){
     [...node.childNodes].forEach(child=>{
@@ -2025,6 +2161,39 @@ function newAulaForm(blockNum, suggestedNum){
   </div>`;
 }
 
+function orgScreenForm(){
+  const blockOptsFor = (curBn)=>COURSE.map(bb=>`<option value="${bb.num}" ${bb.num===curBn?'selected':''}>Bloco ${toRoman(bb.num)} — ${esc(bb.title)}</option>`).join('');
+  const blockRows = COURSE.map(b=>`
+    <div class="org-block-card" data-org-block="${b.num}">
+      <div class="org-block-header-row">
+        <input type="text" class="org-block-num" value="${b.num}" title="Número do bloco">
+        <input type="text" class="org-block-title" value="${escAttr(b.title)}" title="Título do bloco">
+        <label class="org-hidden-label"><input type="checkbox" class="org-block-hidden" ${b.hidden?'':'checked'}> Visível</label>
+        <button type="button" class="btn-tiny org-delete-block" style="background:var(--terracotta);" data-action="org-delete-block-row">🗑 Excluir bloco</button>
+      </div>
+      <div class="org-aula-rows">
+        ${b.aulas.map(a=>`
+          <div class="org-aula-row" data-org-aula="${a.num}" data-org-aula-block="${b.num}">
+            <input type="text" class="org-aula-num" value="${a.num}" title="Número da aula">
+            <select class="org-aula-block">${blockOptsFor(b.num)}</select>
+            <input type="text" class="org-aula-title" value="${escAttr(a.title)}" title="Título da aula">
+            <label class="org-hidden-label"><input type="checkbox" class="org-aula-hidden" ${a.hidden?'':'checked'}> Visível</label>
+            <button type="button" class="btn-tiny org-delete-aula" style="background:var(--terracotta);" data-action="org-delete-aula-row">🗑</button>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+
+  return `<div class="editor-form org-screen" data-kind="orgScreen">
+    <div class="editing-type-banner">Organizar curso — blocos, aulas, numeração e visibilidade</div>
+    <div class="hint">Mude números, títulos, blocos e visibilidade à vontade. Nada é salvo até você clicar em "Salvar todas as alterações" no final. Excluir aqui também é definitivo (use um backup se quiser voltar atrás).</div>
+    <div class="org-blocks-list">${blockRows}</div>
+    <div class="editor-actions">
+      <button class="btn-primary" data-action="save-org-screen">Salvar todas as alterações</button>
+      <button class="btn-secondary" data-action="cancel-edit">Cancelar (descarta tudo que mudou aqui)</button>
+    </div>
+  </div>`;
+}
+
 function newBlockForm(suggestedNum){
   return `<div class="editor-form" data-kind="newBlock">
     <label>Número do bloco</label><input type="text" spellcheck="true" lang="pt-BR" id="ef-new-b-num" value="${suggestedNum}">
@@ -2088,7 +2257,7 @@ function render(){
   // to the first available (visible) aula in the course.
   let b = COURSE.find(x=>x.num===state.block);
   let curAula = b ? b.aulas.find(x=>x.num===state.aula) : null;
-  if(!b || !curAula || (curAula.hidden && !isAdmin)){
+  if(!b || !curAula || b.hidden && !isAdmin || (curAula.hidden && !isAdmin)){
     const visibleFirst = flatAulaList(isAdmin)[0];
     if(visibleFirst){
       state.block = visibleFirst.blockNum;
@@ -2106,6 +2275,10 @@ function render(){
   }
   if(editState && editState.kind==='newBlock'){
     content.innerHTML = newBlockForm(editState.suggestedNum);
+    return;
+  }
+  if(editState && editState.kind==='orgScreen'){
+    content.innerHTML = orgScreenForm();
     return;
   }
 
@@ -2174,6 +2347,11 @@ document.getElementById('content').addEventListener('click', async (e)=>{
   const btn = e.target.closest('[data-action]');
   if(!btn) return;
   const action = btn.dataset.action;
+  if(!isAdmin && action!=='cancel-edit'){
+    // Camada extra de segurança: nenhuma ação de edição executa sem autenticação,
+    // mesmo que algum botão administrativo tenha ficado visível por engano.
+    return;
+  }
   const b = COURSE.find(x=>x.num===state.block);
   const a = b ? b.aulas.find(x=>x.num===state.aula) : null;
   if(a) a.sections = a.sections || [];
@@ -2206,6 +2384,82 @@ document.getElementById('content').addEventListener('click', async (e)=>{
     editState = null;
     await saveCourseToStorage();
     render();
+    return;
+  }
+
+  if(action==='org-delete-block-row'){
+    if(confirm('Remover este bloco inteiro (e todas as aulas dele) da lista? Isso só é definitivo depois de clicar em "Salvar todas as alterações".')){
+      btn.closest('.org-block-card').remove();
+    }
+    return;
+  }
+  if(action==='org-delete-aula-row'){
+    if(confirm('Remover esta aula da lista? Isso só é definitivo depois de clicar em "Salvar todas as alterações".')){
+      btn.closest('.org-aula-row').remove();
+    }
+    return;
+  }
+  if(action==='save-org-screen'){
+    const blockCards = [...document.querySelectorAll('.org-block-card')];
+    const seenBlockNums = new Set();
+    const seenAulaNums = new Set();
+    const newCourse = [];
+    const blockByOldNum = {};
+    // Primeiro, cria os blocos (sem aulas ainda) preservando os dados originais não editados aqui (aulaRange, sources)
+    for(const card of blockCards){
+      const oldNum = +card.dataset.orgBlock;
+      const origBlock = COURSE.find(x=>x.num===oldNum);
+      const newNum = parseInt(card.querySelector('.org-block-num').value, 10);
+      const newTitle = card.querySelector('.org-block-title').value.trim();
+      if(isNaN(newNum) || !newTitle){ alert('Todo bloco precisa de um número válido e um título.'); return; }
+      if(seenBlockNums.has(newNum)){ alert(`Número de bloco repetido: ${newNum}. Corrija antes de salvar.`); return; }
+      seenBlockNums.add(newNum);
+      const hidden = !card.querySelector('.org-block-hidden').checked;
+      const newBlock = { num:newNum, title:newTitle, hidden,
+        aulaRange:(origBlock&&origBlock.aulaRange)||'', sources:(origBlock&&origBlock.sources)||'', aulas:[] };
+      newCourse.push(newBlock);
+      blockByOldNum[oldNum] = newBlock; // fallback, caso o select não tenha sido mudado
+    }
+    // Mapa de numero-de-bloco-NOVO por numero-de-bloco escolhido no select (que usa os numeros ORIGINAIS como value)
+    const newBlockByOldSelectValue = {};
+    blockCards.forEach(card=>{
+      const oldNum = +card.dataset.orgBlock;
+      const newNum = parseInt(card.querySelector('.org-block-num').value, 10);
+      newBlockByOldSelectValue[oldNum] = newCourse.find(x=>x.num===newNum);
+    });
+    // Agora distribui as aulas para os blocos (novos) escolhidos
+    const aulaRows = [...document.querySelectorAll('.org-aula-row')];
+    for(const row of aulaRows){
+      const oldAulaNum = +row.dataset.orgAula;
+      const oldBlockNum = +row.dataset.orgAulaBlock;
+      const origBlock = COURSE.find(x=>x.num===oldBlockNum);
+      const origAula = origBlock ? origBlock.aulas.find(x=>x.num===oldAulaNum) : null;
+      const newNum = parseInt(row.querySelector('.org-aula-num').value, 10);
+      const newTitle = row.querySelector('.org-aula-title').value.trim();
+      const selectedOldBlockNum = +row.querySelector('.org-aula-block').value;
+      const targetBlock = newBlockByOldSelectValue[selectedOldBlockNum];
+      if(isNaN(newNum) || !newTitle){ alert('Toda aula precisa de um número válido e um título.'); return; }
+      if(seenAulaNums.has(newNum)){ alert(`Número de aula repetido: ${newNum}. Corrija antes de salvar.`); return; }
+      if(!targetBlock){ alert('Uma aula está apontando para um bloco que foi excluído. Corrija antes de salvar.'); return; }
+      seenAulaNums.add(newNum);
+      const hidden = !row.querySelector('.org-aula-hidden').checked;
+      targetBlock.aulas.push({
+        num:newNum, title:newTitle, hidden,
+        subtitle:(origAula&&origAula.subtitle)||'', sources:(origAula&&origAula.sources)||'',
+        intro:(origAula&&origAula.intro)||'', sections:(origAula&&origAula.sections)||[],
+        isPractice:(origAula&&origAula.isPractice)||false,
+      });
+    }
+    newCourse.forEach(b=>b.aulas.sort((x,y)=>x.num-y.num));
+    newCourse.sort((x,y)=>x.num-y.num);
+    COURSE.length = 0;
+    newCourse.forEach(b=>COURSE.push(b));
+    const firstVisible = flatAulaList(true)[0];
+    if(firstVisible){ state.block = firstVisible.blockNum; state.aula = firstVisible.aulaNum; }
+    editState = null;
+    await saveCourseToStorage();
+    render();
+    alert('Organização salva com sucesso.');
     return;
   }
 
@@ -2431,6 +2685,7 @@ document.getElementById('content').addEventListener('click', async (e)=>{
 });
 
 document.getElementById('content').addEventListener('change', async (e)=>{
+  if(!isAdmin) return;
   if(e.target.id==='ef-image'){
     const file = e.target.files[0];
     if(!file) return;
@@ -2546,6 +2801,12 @@ document.getElementById('admin-lock-btn').addEventListener('click', ()=>{
 });
 document.getElementById('pw-cancel-btn').addEventListener('click', closePwModal);
 document.getElementById('change-pw-btn').addEventListener('click', ()=>openPwModal('change'));
+document.getElementById('organize-btn').addEventListener('click', ()=>{
+  if(!isAdmin) return;
+  editState = {kind:'orgScreen'};
+  render();
+  document.getElementById('content').scrollIntoView({behavior:'smooth'});
+});
 document.getElementById('reload-data-btn').addEventListener('click', async ()=>{
   const indicator = document.getElementById('save-status-indicator');
   if(indicator){ indicator.textContent = 'Recarregando…'; indicator.style.color = '#3D3E77'; }
